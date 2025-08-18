@@ -7,21 +7,15 @@
 	},
 	"permissions": [
 		"storage",
-		"scripting",
-		"activeTab",
 		"tabs"
 	],
 	"host_permissions": [
-		"<all_urls>"
+		"https://smartstore.naver.com/*"
 	],
-	"background": {
-		"service_worker": "background/service-worker.js",
-		"type": "module"
-	},
 	"content_scripts": [
 		{
 			"matches": [
-				"<all_urls>"
+				"https://smartstore.naver.com/*"
 			],
 			"js": [
 				"content/content.js"

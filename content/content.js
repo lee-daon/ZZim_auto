@@ -14,6 +14,19 @@
 		chrome.runtime.sendMessage({ type: 'ZZIM_STATUS', text }).catch(() => {});
 	}
 
+	async function waitForLoadAndNormalizeScroll() {
+		if (document.readyState !== 'complete') {
+			await new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
+		}
+		postStatus('페이지 로드 대기 (2초)');
+		await sleep(2000);
+		const nearBottom = (window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 8);
+		if (nearBottom) {
+			window.scrollTo({ top: 0, behavior: 'auto' });
+			await sleep(300);
+		}
+	}
+
 	async function readState() {
 		try {
 			const data = await chrome.storage.local.get(STORAGE_KEY);
@@ -123,6 +136,7 @@
 	}
 
 	async function runOnceOnPage() {
+		await waitForLoadAndNormalizeScroll();
 		await smoothScrollToBottom();
 		await clickButtonsWithInterval();
 	}

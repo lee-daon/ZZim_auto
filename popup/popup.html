@@ -5,23 +5,57 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>ZZim Auto</title>
 	<style>
-		body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 12px; }
+		:root {
+			--bg: #0b1020;
+			--card: #12172a;
+			--text: #e9ecf1;
+			--muted: #9aa4b2;
+			--primary: #3b82f6;
+			--primary-600: #2563eb;
+			--border: #1f2742;
+		}
+		* { box-sizing: border-box; }
+		html, body { margin: 0; padding: 0; }
+		body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: linear-gradient(180deg, #0b1020 0%, #0e1430 100%); color: var(--text); }
+		.container { width: 280px; padding: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+		.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+		.title { font-size: 14px; font-weight: 700; letter-spacing: 0.3px; }
+		.badge { font-size: 10px; padding: 3px 6px; border-radius: 999px; background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.35); }
 		.row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
-		input[type="number"] { width: 100px; padding: 6px 8px; }
-		button { padding: 6px 10px; cursor: pointer; }
-		.status { font-size: 12px; color: #333; }
+		.label { font-size: 12px; color: var(--muted); width: 70px; }
+		input[type="number"] { flex: 1; background: #0d1326; color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; outline: none; font-size: 13px; }
+		input[type="number"]::placeholder { color: #6b7280; }
+		/* number input spinner 제거 */
+		input[type="number"]::-webkit-outer-spin-button,
+		input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+		input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+		.buttons { display: flex; gap: 8px; }
+		button { flex: 1; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: #0f1730; color: var(--text); cursor: pointer; font-weight: 600; font-size: 13px; transition: all .15s ease; }
+		button:hover { transform: translateY(-1px); }
+		button:active { transform: translateY(0); }
+		button.primary { background: var(--primary); border-color: var(--primary-600); color: white; }
+		button.primary:hover { background: var(--primary-600); }
+		.status { font-size: 12px; color: var(--muted); margin-top: 6px; }
+		.footer { margin-top: 10px; text-align: right; font-size: 10px; color: var(--muted); }
 	</style>
 </head>
 <body>
-	<div class="row">
-		<label for="targetCount">목표개수</label>
-		<input id="targetCount" type="number" min="1" step="1" placeholder="예: 120">
+	<div class="container">
+		<div class="header">
+			<div class="title">ZZim Auto</div>
+			<div class="badge">v0.1</div>
+		</div>
+		<div class="row">
+			<div class="label">목표개수</div>
+			<input id="targetCount" type="number" min="1" step="1" placeholder="예: 120">
+		</div>
+		<div class="buttons">
+			<button id="startBtn" class="primary">시작</button>
+			<button id="stopBtn">중지</button>
+		</div>
+		<div class="status" id="status">대기 중</div>
+		<div class="footer">SmartStore helper</div>
 	</div>
-	<div class="row">
-		<button id="startBtn">시작</button>
-		<button id="stopBtn">중지</button>
-	</div>
-	<div class="status" id="status">대기 중</div>
 	<script src="popup.js"></script>
 </body>
 </html>
