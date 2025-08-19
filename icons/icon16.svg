@@ -1,0 +1,15 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- 짙은 배경 -->
+  <rect width="16" height="16" fill="#2D3748" rx="2"/>
+  
+  <!-- 흰색 대문자 L -->
+  <text 
+    x="8" 
+    y="12" 
+    font-family="Arial Black, Arial, sans-serif" 
+    font-size="11" 
+    font-weight="900" 
+    fill="white" 
+    text-anchor="middle"
+  >L</text>
+</svg> 
