@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "ZZim Auto",
 	"version": "0.1.2",
-	"description": "네이버 스마트스토어 찜 자동화 확장 프로그램, 이미 찜한 상품은 넘어감+페이지 자동 넘김",
+	"description": "스스 찜 v0.1.2추가: 더이상 찜 할 상품이 없으면 알아서 멈춤",
 	"action": {
 		"default_popup": "popup/popup.html",
 		"default_icon": {
