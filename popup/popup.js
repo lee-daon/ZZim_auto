@@ -51,6 +51,9 @@
 		if (msg?.type === 'ZZIM_STATUS') {
 			setStatus(msg.text || '');
 		}
+		if (msg?.type === 'ZZIM_FINISHED') {
+			setStatus('중지 (완료)');
+		}
 	});
 })();
 

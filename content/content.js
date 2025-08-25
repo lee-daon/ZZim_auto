@@ -14,12 +14,16 @@
 		chrome.runtime.sendMessage({ type: 'ZZIM_STATUS', text }).catch(() => {});
 	}
 
+	function notifyFinished() {
+		chrome.runtime.sendMessage({ type: 'ZZIM_FINISHED' }).catch(() => {});
+	}
+
 	async function waitForLoadAndNormalizeScroll() {
 		if (document.readyState !== 'complete') {
 			await new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
 		}
-		postStatus('페이지 로드 대기 (2초)');
-		await sleep(2000);
+		postStatus('페이지 로드 대기 (1초)');
+		await sleep(1000);
 		const nearBottom = (window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 8);
 		if (nearBottom) {
 			window.scrollTo({ top: 0, behavior: 'auto' });
@@ -80,7 +84,7 @@
 				postStatus(`클릭 ${clickedCount}/${targetTotal}`);
 				await writeState({ running: true, targetTotal, clickedCount });
 			} catch {}
-			await sleep(500);
+			await sleep(200);
 		}
 	}
 
@@ -112,27 +116,29 @@
 	async function goNextPage() {
 		const container = getPaginationContainer();
 		if (!container) return false;
-		const current = getCurrentPageNumber(container);
-		if (!Number.isFinite(current)) return false;
-		const desired = current + 1;
+		const before = getCurrentPageNumber(container);
+		if (!Number.isFinite(before)) return false;
+		const desired = before + 1;
 		let nextNumeric = findNumericAnchor(container, desired);
 		if (nextNumeric) {
 			nextNumeric.click();
 			await sleep(1200);
-			return true;
-		}
-		const nextBlock = findNextBlockAnchor(container);
-		if (!nextBlock) return false;
-		nextBlock.click();
-		await sleep(1200);
-		const container2 = getPaginationContainer();
-		nextNumeric = container2 ? findNumericAnchor(container2, desired) : null;
-		if (nextNumeric) {
-			nextNumeric.click();
+		} else {
+			const nextBlock = findNextBlockAnchor(container);
+			if (!nextBlock) return false;
+			nextBlock.click();
 			await sleep(1200);
-			return true;
+			const container2 = getPaginationContainer();
+			nextNumeric = container2 ? findNumericAnchor(container2, desired) : null;
+			if (nextNumeric) {
+				nextNumeric.click();
+				await sleep(1200);
+			}
 		}
-		return true; // 블록 이동만 되었더라도 상위 루프에서 다음 라운드 처리
+		const afterContainer = getPaginationContainer();
+		const after = afterContainer ? getCurrentPageNumber(afterContainer) : null;
+		if (!Number.isFinite(after)) return false;
+		return after !== before;
 	}
 
 	async function runOnceOnPage() {
@@ -156,7 +162,8 @@
 			postStatus('다음 페이지 이동');
 			const moved = await goNextPage();
 			if (!moved) {
-				postStatus('다음 페이지를 찾을 수 없음');
+				postStatus('마지막 페이지');
+				notifyFinished();
 				break;
 			}
 			await sleep(1500);
@@ -164,6 +171,7 @@
 		isRunning = false;
 		await writeState({ running: false, targetTotal, clickedCount });
 		postStatus(`완료 ${clickedCount}/${targetTotal}`);
+		notifyFinished();
 	}
 
 	chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
