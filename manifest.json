@@ -6,13 +6,13 @@
 	"action": {
 		"default_popup": "popup/popup.html",
 		"default_icon": {
-			"16": "icons/icon16.png",
-			"48": "icons/icon48.png"
+			"16": "icons/161.png",
+			"48": "icons/481.png"
 		  }
 	},
 	"icons": {
-		"16": "icons/icon16.png",
-		"48": "icons/icon48.png"
+		"16": "icons/161.png",
+		"48": "icons/481.png"
 	},
 	"permissions": [
 		"storage",
