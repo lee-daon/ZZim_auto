@@ -3,6 +3,7 @@
 	let targetTotal = 0;
 	let clickedCount = 0;
 	let stopRequested = false;
+	let noProductPageCount = 0;
 
 	const STORAGE_KEY = 'zzim_auto_state';
 
@@ -22,8 +23,8 @@
 		if (document.readyState !== 'complete') {
 			await new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
 		}
-		postStatus('페이지 로드 대기 (1초)');
-		await sleep(1000);
+		postStatus('페이지 로드 대기 (0.2초)');
+		await sleep(200);
 		const nearBottom = (window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 8);
 		if (nearBottom) {
 			window.scrollTo({ top: 0, behavior: 'auto' });
@@ -53,18 +54,9 @@
 	}
 
 	async function smoothScrollToBottom() {
-		const step = Math.max(200, Math.floor(window.innerHeight * 0.8));
-		let last = -1;
-		for (let i = 0; i < 10000; i++) {
-			if (stopRequested) return;
-			window.scrollBy({ top: step, behavior: 'smooth' });
-			await sleep(350);
-			const y = window.scrollY;
-			if (Math.abs(y - last) < 2) break;
-			last = y;
-			if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 4) break;
-		}
-		await sleep(600);
+		if (stopRequested) return;
+		window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+		await sleep(1000);
 	}
 
 	function getZzimButtonsInView() {
@@ -84,8 +76,9 @@
 				postStatus(`클릭 ${clickedCount}/${targetTotal}`);
 				await writeState({ running: true, targetTotal, clickedCount });
 			} catch {}
-			await sleep(200);
+			await sleep(5);
 		}
+		await sleep(300);
 	}
 
 	function getPaginationContainer() {
@@ -144,7 +137,17 @@
 	async function runOnceOnPage() {
 		await waitForLoadAndNormalizeScroll();
 		await smoothScrollToBottom();
+		const buttonsBefore = getZzimButtonsInView().length;
 		await clickButtonsWithInterval();
+		const buttonsAfter = getZzimButtonsInView().length;
+		
+		if (buttonsBefore === 0 && buttonsAfter === 0) {
+			noProductPageCount += 1;
+		} else {
+			noProductPageCount = 0;
+		}
+		
+		return noProductPageCount;
 	}
 
 	async function run(target) {
@@ -152,6 +155,7 @@
 		isRunning = true;
 		stopRequested = false;
 		targetTotal = target;
+		noProductPageCount = 0;
 		const existing = await readState();
 		clickedCount = existing?.running && existing?.targetTotal === target ? (existing.clickedCount || 0) : 0;
 		await writeState({ running: true, targetTotal, clickedCount });
@@ -159,6 +163,13 @@
 		while (!stopRequested && clickedCount < targetTotal) {
 			await runOnceOnPage();
 			if (clickedCount >= targetTotal || stopRequested) break;
+			
+			if (noProductPageCount >= 3) {
+				postStatus('3페이지 연속 찜한 상품이 없음');
+				notifyFinished();
+				break;
+			}
+			
 			postStatus('다음 페이지 이동');
 			const moved = await goNextPage();
 			if (!moved) {
