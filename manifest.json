@@ -1,8 +1,8 @@
 {
 	"manifest_version": 3,
 	"name": "ZZim Auto",
-	"version": "0.1.3",
-	"description": "스스 찜 v0.1.3추가: 3페이지 연속 찜한 상품이 없으면 알아서 멈춤",
+	"version": "0.1.4",
+	"description": "스스 찜 v0.1.4추가: 네이버 로직 대응",
 	"action": {
 		"default_popup": "popup/popup.html",
 		"default_icon": {
