@@ -76,7 +76,7 @@
 				postStatus(`클릭 ${clickedCount}/${targetTotal}`);
 				await writeState({ running: true, targetTotal, clickedCount });
 			} catch {}
-			await sleep(5);
+			await sleep(Math.random() * 500 + 2000);
 		}
 		await sleep(300);
 	}
